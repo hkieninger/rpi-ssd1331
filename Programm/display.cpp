@@ -8,6 +8,27 @@ Display::Display(uint16_t width, uint16_t height) {
     this->height = height;
 }
 
+uint16_t Display::width(void) {
+    return width;
+}
+        
+uint16_t Display::height(void) {
+    return height;
+}
+
+void Display::clear(void) {
+    for(int x = 0; x < width; x++) {
+        for(int y = 0; y < height; y++) {
+            drawPoint(x, y, 0);
+        }
+    }
+}
+
+void Display::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+
+}
+
+
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {
     uint16_t color = red >> 3;
     color <<= 6;

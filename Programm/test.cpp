@@ -15,7 +15,7 @@
 #define	GREEN           0x07E0
 #define CYAN            0x07FF
 #define MAGENTA         0xF81F
-#define YELLOW          0xFFE0  
+#define YELLOW          0xFFE0
 #define WHITE           0xFFFF
 
 int main(void) {
@@ -24,9 +24,9 @@ int main(void) {
     display.begin();
     for(int x = 0; x < SSD1331_WIDTH; x++) {
         for(int y = 0; y < SSD1331_HEIGHT; y++) {
-            display.drawPoint(x, y, y);
+            display.drawPoint(x, y, 0xF8);
         }
     }
-    sleep(1);
+    sleep(10);
     display.end();
 }

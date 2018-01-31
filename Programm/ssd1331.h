@@ -1,6 +1,14 @@
 #ifndef SSD1331_H_
 #define SSD1331_H_ 1
 
+/*
+ * macro to select the type of pin numbering, important for SSD1331::begin() to know the channel associated with the pin
+ * WIRINGPI_NUMBERING for wiringPiSetup() -> default for the case none of these are defined
+ * GPIO_NUMBERING for wiringPiSetupGpio()
+ * PHYS_NUMBERING for wiringPiSetupPhys()
+ */
+#define WIRINGPI_NUMBERING 1
+
 //c
 #include <stdint.h>
 //hans
@@ -46,38 +54,54 @@
 /* 
  * represents a display wich works with the SSD1331 driver
  * datasheet: https://cdn-shop.adafruit.com/datasheets/SSD1331_1.2.pdf
+ * connect the display to the spi interface: https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tutorial
+ * you don't need the miso pin, but need additionaly a dc and rst pin
  */
 class SSD1331: public Display {
     //pins to use for the communication with the SSD1331 driver
     int cs, dc, rst;
     //file descriptor of the SPI interface
     int fdSPI;
+    //channel of wiringPi spi (0 or 1) see: http://wiringpi.com/reference/spi-library/
+    int channel;
     public:
         /*
          * constructor
-         * @throw: GPIOException
-         * @cs: chip select pin, channel of wiringPi spi (0 or 1) see: https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tutorial
+         * @throw: std::invalid_argument
+         * @cs: chip select pin: for wiringPi numbering 10 or 11, for phys numbering 24 or 26, for gpio/bcm numbering 8 or 7 
          * @dc: data/command pin, number of the pin for data/command selection, pin numbering according to the called wiringPi setup function
          * @rst: reset pin, number of the pin to reset the display, pin numbering according to the called wiringPi setup function
          */
         SSD1331(int cs, int dc, int rst);
 
         /*
-         * initialises the display, must be called before any draw function
-         * you must call one of the wiringPi setup function in advance
-         * opens the SPI file descriptor
+         * must be called before any draw function, you must call one of the wiringPi setup function in advance
+         * resets the display, opens the SPI file descriptor, turns the screen on
+         * @throw: GPIOException
          */
         void begin(void);
 
         /*
-         * releases the resources
-         * closes the SPI file descriptor
+         * should be called when your done with the display
+         * releases the resources: turns the screen off, closes the SPI file descriptor
          * @throw: GPIOException
          */
         void end(void);
 
         /*
-         * puts the pointer of the SSD1331 RAM to the specified x and y
+         * turns the display on
+         * @throw: GPIOException
+         */
+        void turnOn(void);
+
+        /*
+         * turns the display off
+         * @throw: GPIOException
+         */
+        void turnOff(void);
+
+        /*
+         * puts the pointer of the SSD1331 Graphic Display Data RAM to the specified x and y
          * @throw: GPIOException, std::out_of_range
          * @x: the x coordinate of the pointer
          * @y: the y coordinate of the pointer
@@ -85,9 +109,16 @@ class SSD1331: public Display {
         void goTo(uint16_t x, uint16_t y);
 
         /*
+         * writes a color to the Graphic Display Data RAM at the current pointer position
+         * and increments the pointer position to the next color (horizontally)
+         * @color: the color to push
+         */
+        void pushColor(uint16_t color);
+
+        /*
          * sends lenght bytes to the display as data
          * @throw: GPIOException
-         * @data: pointer to the data
+         * @data: pointer to the data, don't forget that raspberry works with little endian while ssd1331 needs big endian
          * @length: the amount of data bytes/uint8_t
          */
         void writeData(uint8_t *data, int length);
@@ -104,6 +135,7 @@ class SSD1331: public Display {
          * @throw: GPIOException, std::out_of_range
          */
         void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
+
 };
 
 #endif /* SSD1331_H_ */

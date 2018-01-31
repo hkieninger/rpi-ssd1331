@@ -10,10 +10,20 @@ class Display {
         /* 
          * constructor for a display
          * should be called by derivating classes to initialise the width and the height 
-         *  @width: the width of the display
+         * @width: the width of the display
          * @height: the height of the display 
          */
         Display(uint16_t width, uint16_t height);
+
+        /*
+         * @return: the width of the display in pixel
+         */
+        uint16_t width(void);
+
+        /*
+         * @return: the height of the display in pixel
+         */
+        uint16_t height(void);
 
         /*
          * set the color for a pixel on the display
@@ -23,12 +33,23 @@ class Display {
          */
         virtual void drawPoint(uint16_t x, uint16_t y, uint16_t color) = 0;
 
-        /*virtual void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
-        virtual void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
-        virtual void fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        /*
+         * clears the screen, sets all the pixel back to the default color (probably black)
+         */
         virtual void clear(void);
-        uint16_t width(void);
-        uint16_t height(void);
+
+        /*
+         * draws a line
+         * @x0: the starting x position
+         * @y0: the starting y position
+         * @x1: the stoping x position
+         * @y1: the stoping y position
+         * @color: the color of the line
+         */
+        virtual void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        
+        /*virtual void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        virtual void fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
         void drawCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
         void fillCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
         void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, char& bitmap);*/

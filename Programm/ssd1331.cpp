@@ -1,6 +1,6 @@
 //c++
 #include <string> //std::string
-#include <stdexcept> //std::out_of_range
+#include <stdexcept> //std::out_of_range, std::invalid_argument
 //c
 #include <stdint.h> //uint16_t, uint8_t
 #include <string.h> //strerror()
@@ -8,6 +8,7 @@
 #include <unistd.h> //write(), close()
 #include <wiringPi.h> //pinMode(), digitalWrite()
 #include <wiringPiSPI.h> //wiringPiSPISetup()
+#include <byteswap.h> //bswap_16()
 //hans
 #include "gpio_exception.h" //GPIOException
 #include "ssd1331.h"
@@ -17,6 +18,25 @@ SSD1331::SSD1331(int cs, int dc, int rst) : Display(SSD1331_WIDTH, SSD1331_HEIGH
     this->dc = dc;
     this->rst = rst;
     fdSPI = -1;
+    #if defined GPIO_NUMBERING
+    switch(cs) {
+        case 8: channel = 0; break;
+        case 7: channel = 1; break;
+        default: throw std::invalid_argument("invalid cs pin, valid cs pins are 8 (bcm) and 7 (bcm)");
+    } 
+    #elif defined PHYS_NUMBERING
+    switch(cs) {
+        case 24: channel = 0; break;
+        case 26: channel = 1; break;
+        default: throw std::invalid_argument("invalid cs pin, valid cs pins are 24 (phys) and 26 (phys)");
+    }
+    #else
+    switch(cs) {
+        case 10: channel = 0; break;
+        case 11: channel = 1; break;
+        default: throw std::invalid_argument("invalid cs pin, valid cs pins are 10 (wiringPi) and 11 (wiringPi)");
+    }
+    #endif
 }
 
 void SSD1331::begin(void) {
@@ -27,64 +47,33 @@ void SSD1331::begin(void) {
     //reset the display
     digitalWrite(cs, LOW);
     digitalWrite(rst, HIGH);
-    delay(500); //TODO: reduce
+    usleep(3);
     digitalWrite(rst, LOW);
-    delay(500); //TODO: reduce
+    usleep(3);
     digitalWrite(rst, HIGH);
-    delay(500); //TODO: reduce
+    usleep(3);
     //open the spi file descriptor
-    int channel; //TODO: proper handling
-    if(cs == 10)
-        channel = 0;
-    else
-        channel = 1;
     fdSPI = wiringPiSPISetup(channel, SSD1331_CLOCK_FREQUENCY);
     if(fdSPI == -1)
-        throw GPIOException("SSD1331 begin, wiringPi SPI setup: " + std::string(strerror(errno)));
-    //initialisation sequence
-    writeCommand(SSD1331_CMD_DISPLAYOFF);  	    // 0xAE
-    writeCommand(SSD1331_CMD_SETREMAP); 	    // 0xA0
-    writeCommand(0x72);		                    // 0x72 for RGB or 0x76 for BGR
-    writeCommand(SSD1331_CMD_STARTLINE); 	    // 0xA1
-    writeCommand(0x0);
-    writeCommand(SSD1331_CMD_DISPLAYOFFSET);    // 0xA2
-    writeCommand(0x0);
-    writeCommand(SSD1331_CMD_NORMALDISPLAY);  	// 0xA4
-    writeCommand(SSD1331_CMD_SETMULTIPLEX); 	// 0xA8
-    writeCommand(0x3F);  			            // 0x3F 1/64 duty
-    writeCommand(SSD1331_CMD_SETMASTER);  	    // 0xAD
-    writeCommand(0x8E);
-    writeCommand(SSD1331_CMD_POWERMODE);  	    // 0xB0
-    writeCommand(0x0B);
-    writeCommand(SSD1331_CMD_PRECHARGE);  	    // 0xB1
-    writeCommand(0x31);
-    writeCommand(SSD1331_CMD_CLOCKDIV);  	    // 0xB3
-    writeCommand(0xF0);                         // 7:4 = Oscillator Frequency, 3:0 = CLK Div Ratio (A[3:0]+1 = 1..16)
-    writeCommand(SSD1331_CMD_PRECHARGEA);  	    // 0x8A
-    writeCommand(0x64);
-    writeCommand(SSD1331_CMD_PRECHARGEB);  	    // 0x8B
-    writeCommand(0x78);
-    writeCommand(SSD1331_CMD_PRECHARGEC);  	    // 0x8C
-    writeCommand(0x64);
-    writeCommand(SSD1331_CMD_PRECHARGELEVEL);  	// 0xBB
-    writeCommand(0x3A);
-    writeCommand(SSD1331_CMD_VCOMH);  		    // 0xBE
-    writeCommand(0x3E);
-    writeCommand(SSD1331_CMD_MASTERCURRENT);  	// 0x87
-    writeCommand(0x06);
-    writeCommand(SSD1331_CMD_CONTRASTA);  	    // 0x81
-    writeCommand(0x91);
-    writeCommand(SSD1331_CMD_CONTRASTB);  	    // 0x82
-    writeCommand(0x50);
-    writeCommand(SSD1331_CMD_CONTRASTC);  	    // 0x83
-    writeCommand(0x7D);
-    writeCommand(SSD1331_CMD_DISPLAYON);	    // 0xAF   
+        throw GPIOException("SSD1331 begin, wiringPi SPI setup (have you enabled spi?): " + std::string(strerror(errno)));
+    //turn display on
+    turnOn(); 
 }
 
 void SSD1331::end(void) {
+    //turn display off
+    turnOff();
     //close spi file descriptor
     if(close(fdSPI) == -1)
         throw GPIOException("SSD1331 end, close SPI file descriptor: " + std::string(strerror(errno)));
+}
+
+void SSD1331::turnOn(void) {
+    writeCommand(SSD1331_CMD_DISPLAYON);        //0xAF
+}
+
+void SSD1331::turnOff(void) {
+    writeCommand(SSD1331_CMD_DISPLAYOFF);       //0xAE
 }
 
 void SSD1331::goTo(uint16_t x, uint16_t y) {
@@ -93,13 +82,18 @@ void SSD1331::goTo(uint16_t x, uint16_t y) {
     if(y >= SSD1331_HEIGHT)
         throw std::out_of_range("SSD1331 goTo, y is out of range");
     // set x and y coordinate
-    writeCommand(SSD1331_CMD_SETCOLUMN);
+    writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
     writeCommand(x);
     writeCommand(SSD1331_WIDTH - 1);
 
-    writeCommand(SSD1331_CMD_SETROW);
+    writeCommand(SSD1331_CMD_SETROW);           // 0x75
     writeCommand(y);
     writeCommand(SSD1331_HEIGHT - 1);
+}
+
+void SSD1331::pushColor(uint16_t color) {
+    color = bswap_16(color);
+    writeData((uint8_t * ) &color, 2);
 }
 
 void SSD1331::writeData(uint8_t *data, int length) {
@@ -128,5 +122,5 @@ void SSD1331::writeCommand(uint8_t command) {
 
 void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
     goTo(x, y);
-    writeData((uint8_t * ) &color, 2);
+    pushColor(color);
 }

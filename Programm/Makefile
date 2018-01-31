@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = 
+CFLAGS = -std=c++11
 LIBRARIES = -lwiringPi
 
 test: test.o ssd1331.o display.o
