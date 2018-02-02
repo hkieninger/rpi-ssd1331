@@ -11,7 +11,7 @@
 
 //c
 #include <stdint.h>
-//hans
+//h
 #include "display.h"
 
 //width and height of the display controlled by an SSD1331

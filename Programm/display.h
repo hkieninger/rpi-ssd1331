@@ -4,6 +4,16 @@
 //c
 #include <stdint.h> //uint16_t, uint8_t
 
+//definiton of common colors in 565 RGB version
+#define	D_BLACK           0x0000
+#define	D_BLUE            0x001F
+#define	D_RED             0xF800
+#define	D_GREEN           0x07E0
+#define D_CYAN            0x07FF
+#define D_MAGENTA         0xF81F
+#define D_YELLOW          0xFFE0
+#define D_WHITE           0xFFFF
+
 class Display {
     uint16_t width, height;
     public:
@@ -18,12 +28,12 @@ class Display {
         /*
          * @return: the width of the display in pixel
          */
-        uint16_t width(void);
+        uint16_t getWidth(void);
 
         /*
          * @return: the height of the display in pixel
          */
-        uint16_t height(void);
+        uint16_t getHeight(void);
 
         /*
          * set the color for a pixel on the display
@@ -39,6 +49,24 @@ class Display {
         virtual void clear(void);
 
         /*
+         * draws a horizontal line
+         * @x: the x starting coordinate
+         * @y: the y starting coordinate
+         * @len: the length of the line
+         * @color: the color of the line
+         */
+        virtual void drawHorizontalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+
+        /*
+         * draws a vertical line
+         * @x: the x starting coordinate
+         * @y: the y starting coordinate
+         * @len: the length of the line
+         * @color: the color of the line
+         */
+        virtual void drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+
+        /*
          * draws a line
          * @x0: the starting x position
          * @y0: the starting y position
@@ -48,9 +76,27 @@ class Display {
          */
         virtual void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
         
-        /*virtual void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        /*
+         * draws the contours of a rectangle
+         * @x0: x position of corner0
+         * @y0: y position of corner0
+         * @x1: x position of corner diagonally to corner0
+         * @y1: y position of corner diagonally to corner0
+         * @color: the color of the contours
+         */
+        virtual void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+
+        /*
+         * fills a rectangle
+         * @x0: x position of corner0
+         * @y0: y position of corner0
+         * @x1: x position of corner diagonally to corner0
+         * @y1: y position of corner diagonally to corner0
+         * @color: the color of the fill
+         */
         virtual void fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
-        void drawCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
+        
+        /*void drawCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
         void fillCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
         void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, char& bitmap);*/
 

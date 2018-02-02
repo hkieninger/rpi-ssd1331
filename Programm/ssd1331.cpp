@@ -9,7 +9,7 @@
 #include <wiringPi.h> //pinMode(), digitalWrite()
 #include <wiringPiSPI.h> //wiringPiSPISetup()
 #include <byteswap.h> //bswap_16()
-//hans
+//h
 #include "gpio_exception.h" //GPIOException
 #include "ssd1331.h"
 
@@ -23,7 +23,7 @@ SSD1331::SSD1331(int cs, int dc, int rst) : Display(SSD1331_WIDTH, SSD1331_HEIGH
         case 8: channel = 0; break;
         case 7: channel = 1; break;
         default: throw std::invalid_argument("invalid cs pin, valid cs pins are 8 (bcm) and 7 (bcm)");
-    } 
+    }
     #elif defined PHYS_NUMBERING
     switch(cs) {
         case 24: channel = 0; break;
@@ -56,8 +56,15 @@ void SSD1331::begin(void) {
     fdSPI = wiringPiSPISetup(channel, SSD1331_CLOCK_FREQUENCY);
     if(fdSPI == -1)
         throw GPIOException("SSD1331 begin, wiringPi SPI setup (have you enabled spi?): " + std::string(strerror(errno)));
+    //turn display off
+    turnOff();
+    //settings for mapping in the GDDRAM
+    writeCommand(SSD1331_CMD_SETREMAP);        // 0xA0
+    writeCommand(0x60);
+    //clear display
+    clear();
     //turn display on
-    turnOn(); 
+    turnOn();
 }
 
 void SSD1331::end(void) {
@@ -77,9 +84,9 @@ void SSD1331::turnOff(void) {
 }
 
 void SSD1331::goTo(uint16_t x, uint16_t y) {
-    if(x >= SSD1331_WIDTH)
+    if(x > SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 goTo, x is out of range");
-    if(y >= SSD1331_HEIGHT)
+    if(y > SSD1331_HEIGHT)
         throw std::out_of_range("SSD1331 goTo, y is out of range");
     // set x and y coordinate
     writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
