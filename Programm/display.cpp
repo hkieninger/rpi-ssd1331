@@ -213,7 +213,7 @@ void Display::fillEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, ui
 void Display::drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap) {
     for(int w = 0; w < width; w++) {
         for(int h = 0; h < height; h++) {
-            drawPoint(w, h, bitmap[h * width + w]);
+            drawPoint(x + w, y + h, bitmap[h * width + w]);
         }
     }
 }

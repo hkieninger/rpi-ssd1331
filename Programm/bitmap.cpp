@@ -4,14 +4,9 @@
 //c
 #include <stdint.h> //uint16_t
 #include <jpeglib.h> //jpeg decompression, to install run sudo apt-get install libjpeg-dev
-#include <sys/types.h> //low level io
-#include <sys/stat.h> //low level io
-#include <fcntl.h> //low level io
-#include <unistd.h> //low level io
-#include <sys/mman.h> //mmap(), munmap()
+#include <stdio.h> //FILE, fopen(), fclose()
 #include <errno.h> //errno
-#include <string.h> //strerror
-#include <stddef.h> //NULL
+#include <string.h> //strerror()
 //h
 #include "bitmap.h"
 
@@ -32,35 +27,31 @@ Bitmap::Bitmap(uint16_t width, uint16_t height, uint16_t *buffer) {
 }
 
 Bitmap::Bitmap(std::string jpeg) {
-    //open the file descriptor to the jpeg file
-    int fd = open(jpeg.c_str(), O_RDONLY);
-    if(fd == -1)
+    //open the file containing the jpeg
+    FILE *file = fopen(jpeg.c_str(), "r");
+    if(file == NULL)
         throw std::runtime_error("Bitmap constructor, open jpeg file: " + std::string(strerror(errno)));
-    //get size of file in bytes
-    struct stat st;
-    if(fstat(fd, &st) == -1)
-        throw std::runtime_error("Bitmap constructor, get jpeg file size: " + std::string(strerror(errno)));
-    //map the file into the memory
-    unsigned char *mapping = (unsigned char *) mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if(mapping == MAP_FAILED)
-        throw std::runtime_error("Bitmap constructor, mapping of jpeg file: " + std::string(strerror(errno)));
 
     //structure for the decompression of the mjpeg picture
     struct jpeg_decompress_struct decompress_info;
     //structure for the handling of errors of the decompression
     struct jpeg_error_mgr jerr;
-    //throw exception instead of exiting programm on failure
-    jerr.error_exit = jpeg_error_exit;
     //create decompression object
     decompress_info.err = jpeg_std_error(&jerr);
+    //throw exception instead of exiting programm on failure, can still be improved since resources are not released properly
+    jerr.error_exit = jpeg_error_exit;
+    //create decompression object
     jpeg_create_decompress(&decompress_info);
-
     //set the source of the jpeg to decompress
-    jpeg_mem_src(&decompress_info, mapping, st.st_size);
+    jpeg_stdio_src(&decompress_info, file);
     //get the informations about the jpeg file by reading the header
     int ret = jpeg_read_header(&decompress_info, TRUE);
     if(ret != 1)
         throw std::runtime_error("Bitmap constructor, data of the file is not a jpeg");
+
+    //start decompressor
+    jpeg_start_decompress(&decompress_info);
+
     //get the basic properties of the image and allocate a first buffer
     width = decompress_info.output_width;
     height = decompress_info.output_height;
@@ -70,24 +61,20 @@ Bitmap::Bitmap(std::string jpeg) {
     unsigned char *rgb24_buffer = new unsigned char[width * height * bytes_per_pixel];
 
     //make the decompression
-    jpeg_start_decompress(&decompress_info);
     int row_stride = decompress_info.output_width * decompress_info.output_components;
     unsigned char *buffer_array[1];
     while(decompress_info.output_scanline < decompress_info.output_height) {
         buffer_array[0] = rgb24_buffer + decompress_info.output_scanline * row_stride;
         jpeg_read_scanlines(&decompress_info, buffer_array, 1);
     }
+
+    //finish decompressor
     jpeg_finish_decompress(&decompress_info);
 
     //destroy decompression object
     jpeg_destroy_decompress(&decompress_info);
-    //unmap the file
-    if(munmap(mapping, st.st_size) == -1) {
-        delete[] rgb24_buffer;
-        throw std::runtime_error("Bitmap constructor, unmap jpeg file: " + std::string(strerror(errno)));
-    }
     //close the file
-    if(close(fd) == -1) {
+    if(fclose(file) == EOF) {
         delete[] rgb24_buffer;
         throw std::runtime_error("Bitmap constructor, close jpeg file: " + std::string(strerror(errno)));
     }
