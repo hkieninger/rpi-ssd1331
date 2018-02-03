@@ -1,5 +1,5 @@
 //c
-#include <stdint.h> //uint16_t, uint8_t, int8_t
+#include <stdint.h> //uint16_t, uint8_t, int8_t, int32_t, int64_t
 #include <stdlib.h> //abs()
 //h
 #include "display.h"
@@ -37,6 +37,7 @@ void Display::drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t co
     }
 }
 
+//for a better implementation use bresenhams-algorithm https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 void Display::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
     uint16_t dx = abs(x1 - x0) + 1;
     uint16_t dy = abs(y1 - y0) + 1;
@@ -143,6 +144,78 @@ void Display::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
     }
 }
 
+//code copied and adapted from https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+void Display::drawEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    uint16_t a = abs(x1 - x0) / 2;
+    uint16_t b = abs(y1 - y0) / 2;
+    uint16_t x = a + ((x0 < x1) ? x0 : x1);
+    uint16_t y = b + ((y0 < y1) ? y0 : y1);
+    int32_t dx = 0, dy = b; /* im I. Quadranten von links oben nach rechts unten */
+    int64_t a2 = a * a, b2 = b * b;
+    int64_t err = b2 - (2 * b - 1) * a2, e2; /* Fehler im 1. Schritt */
+
+    do {
+        drawPoint(x + dx, y + dy, color); /* I. Quadrant */
+        drawPoint(x - dx, y + dy, color); /* II. Quadrant */
+        drawPoint(x - dx, y - dy, color); /* III. Quadrant */
+        drawPoint(x + dx, y - dy, color); /* IV. Quadrant */
+
+        e2 = 2 * err;
+        if(e2 < (2 * dx + 1) * b2) { 
+            dx++;
+            err += (2 * dx + 1) * b2; 
+        }
+        if(e2 > -(2 * dy - 1) * a2) {
+            dy--;
+            err -= (2 * dy - 1) * a2;
+        }
+    } while (dy >= 0);
+
+    while (dx++ < a) { /* fehlerhafter Abbruch bei flachen Ellipsen (b=1) */
+        drawPoint(x + dx, y, color); /* -> Spitze der Ellipse vollenden */
+        drawPoint(x - dx, y, color);
+    }
+}
+
+//code copied and adapted from https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+void Display::fillEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    uint16_t a = abs(x1 - x0) / 2;
+    uint16_t b = abs(y1 - y0) / 2;
+    uint16_t x = a + ((x0 < x1) ? x0 : x1);
+    uint16_t y = b + ((y0 < y1) ? y0 : y1);
+    int32_t dx = 0, dy = b; /* im I. Quadranten von links oben nach rechts unten */
+    int64_t a2 = a * a, b2 = b * b;
+    int64_t err = b2 - (2 * b - 1) * a2, e2; /* Fehler im 1. Schritt */
+
+    do {
+        e2 = 2 * err;
+        if(e2 < (2 * dx + 1) * b2) { 
+            dx++;
+            err += (2 * dx + 1) * b2; 
+        }
+        if(e2 > -(2 * dy - 1) * a2) {
+            drawHorizontalLine(x, y + dy, dx + 1, color); /* I. Quadrant */
+            drawHorizontalLine(x - dx, y + dy, dx, color); /* II. Quadrant */
+            drawHorizontalLine(x - dx, y - dy, dx, color); /* III. Quadrant */
+            drawHorizontalLine(x, y - dy, dx + 1, color); /* IV. Quadrant */
+            dy--;
+            err -= (2 * dy - 1) * a2;
+        }
+    } while (dy >= 0);
+
+    while (dx++ < a) { /* fehlerhafter Abbruch bei flachen Ellipsen (b=1) */
+        drawPoint(x + dx, y, color); /* -> Spitze der Ellipse vollenden */
+        drawPoint(x - dx, y, color);
+    }
+}
+
+void Display::drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap) {
+    for(int w = 0; w < width; w++) {
+        for(int h = 0; h < height; h++) {
+            drawPoint(w, h, bitmap[h * width + w]);
+        }
+    }
+}
 
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {
     uint16_t color = red >> 3;

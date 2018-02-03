@@ -4,7 +4,7 @@
 //c
 #include <stdint.h> //uint16_t, uint8_t
 
-//definiton of common colors in 565 RGB version
+//definiton of common colors in 565 RGB (16 bit)
 #define	D_BLACK           0x0000
 #define	D_BLUE            0x001F
 #define	D_RED             0xF800
@@ -96,9 +96,51 @@ class Display {
          */
         virtual void fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
         
-        /*void drawCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
-        void fillCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color);
-        void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, char& bitmap);*/
+        /*
+         * draws the contours of an ellipse
+         * @x0: the x position of the corner0 of the rectangle containing the ellipse
+         * @y0: the y position of the corner0 of the rectangle containing the ellipse
+         * @x1: x position of corner diagonally to corner0 of the rectangle containing the ellipse
+         * @y1: y position of corner diagonally to corner0 of the rectangle containing the ellipse
+         * @color: the color of the contours
+         * 
+         *                           rectangle
+         * if this is corner0 -> +---------------+
+         *                       | /-----------\ |
+         *                       |/             \|
+         *                       |\   ellispe   /|
+         *                       | \-----------/ |
+         *                       +---------------+ <- then this is corner1
+         */
+        void drawEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        
+        /*
+         * fills an ellipse
+         * @x0: the x position of the corner0 of the rectangle containing the ellipse
+         * @y0: the y position of the corner0 of the rectangle containing the ellipse
+         * @x1: x position of corner diagonally to corner0 of the rectangle containing the ellipse
+         * @y1: y position of corner diagonally to corner0 of the rectangle containing the ellipse
+         * @color: the color of the fill
+         * 
+         *                           rectangle
+         * if this is corner0 -> +---------------+
+         *                       | /-----------\ |
+         *                       |/             \|
+         *                       |\   ellispe   /|
+         *                       | \-----------/ |
+         *                       +---------------+ <- then this is corner1
+         */
+        void fillEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
+        
+        /*
+         * draws a bitmap
+         * @x: the x position of the top left corner of the bitmap
+         * @y: the y position of the top left corner of the bitmap
+         * @width: the width of the bitmap
+         * @height: the height of the bitmap
+         * @bitmap: buffer containing the pixel of the bitmap in 565 RGB (16 bit) color
+         */
+        void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap);
 
         /*
          * calculates the 16 bit version of a 24 bit rgb color

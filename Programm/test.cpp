@@ -14,7 +14,9 @@ int main(void) {
     SSD1331 display(CS, DC, RST);
     display.begin();
     display.clear();
-    display.drawLine(10, 10, 30, 40, D_RED);
+    display.drawEllipse(0, 0, display.getWidth() - 1, display.getHeight() - 1, D_BLUE);
+    sleep(5);
+    display.fillEllipse(20, 20, display.getWidth() - 21, display.getHeight() - 21, D_GREEN);
     sleep(10);
     display.end();
 }
