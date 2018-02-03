@@ -3,7 +3,7 @@
 #include <wiringPi.h> //wiringPiSetupGpio()
 //h
 #include "display.h" //Display::color565()
-#include "ssd1331.h" //SSD1331, .begin(), .drawPoint(), .end()
+#include "ssd1331.h" //SSD1331, .begin(), .end()
 
 #define CS 10
 #define DC 24
@@ -14,9 +14,9 @@ int main(void) {
     SSD1331 display(CS, DC, RST);
     display.begin();
     display.clear();
-    display.drawEllipse(0, 0, display.getWidth() - 1, display.getHeight() - 1, D_BLUE);
-    sleep(5);
-    display.fillEllipse(20, 20, display.getWidth() - 21, display.getHeight() - 21, D_GREEN);
+    Bitmap bmp("test.jpg");
+    display.drawBitmap(0, 0, bmp);
     sleep(10);
     display.end();
+    return 0;
 }

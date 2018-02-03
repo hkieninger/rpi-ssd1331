@@ -2,6 +2,7 @@
 #include <stdint.h> //uint16_t, uint8_t, int8_t, int32_t, int64_t
 #include <stdlib.h> //abs()
 //h
+#include "bitmap.h"
 #include "display.h"
 
 Display::Display(uint16_t width, uint16_t height) {
@@ -215,6 +216,10 @@ void Display::drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height
             drawPoint(w, h, bitmap[h * width + w]);
         }
     }
+}
+
+void Display::drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap) {
+    drawBitmap(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer());
 }
 
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {

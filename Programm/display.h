@@ -3,6 +3,8 @@
 
 //c
 #include <stdint.h> //uint16_t, uint8_t
+//h
+#include "bitmap.h"
 
 //definiton of common colors in 565 RGB (16 bit)
 #define	D_BLACK           0x0000
@@ -14,6 +16,11 @@
 #define D_YELLOW          0xFFE0
 #define D_WHITE           0xFFFF
 
+/*
+ * abstract class representing a display
+ * it provides some default implementation for basic drawing function
+ * the drawPoint method must be overriden
+ */
 class Display {
     uint16_t width, height;
     public:
@@ -36,6 +43,7 @@ class Display {
         uint16_t getHeight(void);
 
         /*
+         * MUST be overriden
          * set the color for a pixel on the display
          * @x: the x coordinate of the pixel
          * @y: the y coordinate of the pixel
@@ -44,11 +52,13 @@ class Display {
         virtual void drawPoint(uint16_t x, uint16_t y, uint16_t color) = 0;
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * clears the screen, sets all the pixel back to the default color (probably black)
          */
         virtual void clear(void);
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * draws a horizontal line
          * @x: the x starting coordinate
          * @y: the y starting coordinate
@@ -58,6 +68,7 @@ class Display {
         virtual void drawHorizontalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * draws a vertical line
          * @x: the x starting coordinate
          * @y: the y starting coordinate
@@ -67,6 +78,7 @@ class Display {
         virtual void drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * draws a line
          * @x0: the starting x position
          * @y0: the starting y position
@@ -77,6 +89,7 @@ class Display {
         virtual void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
         
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * draws the contours of a rectangle
          * @x0: x position of corner0
          * @y0: y position of corner0
@@ -87,6 +100,7 @@ class Display {
         virtual void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * fills a rectangle
          * @x0: x position of corner0
          * @y0: y position of corner0
@@ -133,6 +147,7 @@ class Display {
         void fillEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);
         
         /*
+         * CAN be overriden with device specifique code to improve the performance
          * draws a bitmap
          * @x: the x position of the top left corner of the bitmap
          * @y: the y position of the top left corner of the bitmap
@@ -140,7 +155,15 @@ class Display {
          * @height: the height of the bitmap
          * @bitmap: buffer containing the pixel of the bitmap in 565 RGB (16 bit) color
          */
-        void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap);
+        virtual void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap);
+
+        /*
+         * draws a bitmap
+         * @x: the x position of the top left corner of the bitmap
+         * @y: the y position of the top left corner of the bitmap
+         * @bitmap: the bitmap object
+         */
+        void drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap);
 
         /*
          * calculates the 16 bit version of a 24 bit rgb color
