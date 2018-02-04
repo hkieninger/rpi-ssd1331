@@ -210,16 +210,16 @@ void Display::fillEllipse(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, ui
     }
 }
 
-void Display::drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap) {
+void Display::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer) {
     for(int w = 0; w < width; w++) {
         for(int h = 0; h < height; h++) {
-            drawPoint(x + w, y + h, bitmap[h * width + w]);
+            drawPoint(x + w, y + h, buffer[h * width + w]);
         }
     }
 }
 
 void Display::drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap) {
-    drawBitmap(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer());
+    drawBuffer(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer());
 }
 
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {

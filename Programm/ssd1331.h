@@ -9,6 +9,12 @@
  */
 #define WIRINGPI_NUMBERING 1
 
+/*
+ * if the macro is set the programm controll wether the passed parameter depass the range
+ * to turn off this function only comment out the macro below
+ */
+#define CHECK_RANGE 1
+
 //c
 #include <stdint.h>
 //h
@@ -21,9 +27,16 @@
 //SSD1331 maximal clock frequency
 #define SSD1331_CLOCK_FREQUENCY 6000000
 
+//time in microseconds to delay after executing drawing command that ssd1331 has time to set the GDDRAM
+#define CLEAR_SLEEP_MICROS 500
+#define FILL_RECT_SLEEP_MICROS 500
+#define DRAW_RECT_SLEEP_MICROS 100
+#define DRAW_LINE_SLEEP_MICROS 100
+
 // SSD1331 Commands
 #define SSD1331_CMD_DRAWLINE 		0x21
 #define SSD1331_CMD_DRAWRECT 		0x22
+#define SSD1331_CMD_CLEAR           0x25
 #define SSD1331_CMD_FILL 			0x26
 #define SSD1331_CMD_SETCOLUMN 		0x15
 #define SSD1331_CMD_SETROW    		0x75
@@ -130,11 +143,53 @@ class SSD1331: public Display {
          */
         void writeCommand(uint8_t command);
 
-        /* 
-         * overrides the drawPoint function of the Display super class, for specifications look up the header file
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
          * @throw: GPIOException, std::out_of_range
          */
         void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void clear(void) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void drawHorizontalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        void drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer) override;
 
 };
 

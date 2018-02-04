@@ -84,10 +84,12 @@ void SSD1331::turnOff(void) {
 }
 
 void SSD1331::goTo(uint16_t x, uint16_t y) {
-    if(x > SSD1331_WIDTH)
+    #ifdef CHECK_RANGE
+    if(x >= SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 goTo, x is out of range");
-    if(y > SSD1331_HEIGHT)
+    if(y >= SSD1331_HEIGHT)
         throw std::out_of_range("SSD1331 goTo, y is out of range");
+    #endif
     // set x and y coordinate
     writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
     writeCommand(x);
@@ -130,4 +132,130 @@ void SSD1331::writeCommand(uint8_t command) {
 void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
     goTo(x, y);
     pushColor(color);
+}
+
+void SSD1331::clear(void) {
+    writeCommand(SSD1331_CMD_CLEAR);        //0x25
+    writeCommand(0);
+    writeCommand(0);
+    writeCommand(SSD1331_WIDTH - 1);
+    writeCommand(SSD1331_HEIGHT - 1);
+    usleep(CLEAR_SLEEP_MICROS);
+}
+
+void SSD1331::drawHorizontalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color) {
+    if(len > 0)
+        drawLine(x, y, x + len - 1, y, color);
+}
+
+void SSD1331::drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t color) {
+    if(len > 0)
+        drawLine(x, y, x, y + len - 1, color);
+}
+
+void SSD1331::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    #ifdef CHECK_RANGE
+    if(x0 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 drawLine, x0 is out of range");
+    if(y0 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 drawLine, y0 is out of range");
+    if(x1 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 drawLine, x1 is out of range");
+    if(y1 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 drawLine, y1 is out of range");
+    #endif
+    //line coordinates
+    writeCommand(SSD1331_CMD_DRAWLINE);     //0x21
+    writeCommand(x0);
+    writeCommand(y0);
+    writeCommand(x1);
+    writeCommand(y1);
+    //line color
+    writeCommand(color >> 10 & 0x3E);
+    writeCommand(color >> 5 & 0x3F);
+    writeCommand(color << 1 & 0x3E);
+    usleep(DRAW_LINE_SLEEP_MICROS);
+}
+
+void SSD1331::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    #ifdef CHECK_RANGE
+    if(x0 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 drawRect, x0 is out of range");
+    if(y0 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 drawRect, y0 is out of range");
+    if(x1 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 drawRect, x1 is out of range");
+    if(y1 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 drawRect, y1 is out of range");
+    #endif
+    //turn fill off
+    writeCommand(SSD1331_CMD_FILL);         //0x26
+    writeCommand(0);
+    //rectangle coordinates
+    writeCommand(SSD1331_CMD_DRAWRECT);     //0x22
+    writeCommand(x0);
+    writeCommand(y0);
+    writeCommand(x1);
+    writeCommand(y1);
+    //outline color
+    writeCommand(color >> 10 & 0x3E);
+    writeCommand(color >> 5 & 0x3F);
+    writeCommand(color << 1 & 0x3E);
+    //fill color (doesn't mater)
+    writeCommand(0);
+    writeCommand(0);
+    writeCommand(0);
+    usleep(DRAW_RECT_SLEEP_MICROS);
+}
+
+void SSD1331::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    #ifdef CHECK_RANGE
+    if(x0 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 fillRect, x0 is out of range");
+    if(y0 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 fillRect, y0 is out of range");
+    if(x1 >= SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 fillRect, x1 is out of range");
+    if(y1 >= SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 fillRect, y1 is out of range");
+    #endif
+    //turn fill on
+    writeCommand(SSD1331_CMD_FILL);         //0x26
+    writeCommand(1);
+    //rectangle coordinates
+    writeCommand(SSD1331_CMD_DRAWRECT);     //0x22
+    writeCommand(x0);
+    writeCommand(y0);
+    writeCommand(x1);
+    writeCommand(y1);
+    //outline color
+    writeCommand(color >> 10 & 0x3E);
+    writeCommand(color >> 5 & 0x3F);
+    writeCommand(color << 1 & 0x3E);
+    //fill color
+    writeCommand(color >> 10 & 0x3E);
+    writeCommand(color >> 5 & 0x3F);
+    writeCommand(color << 1 & 0x3E);
+    usleep(FILL_RECT_SLEEP_MICROS);
+}
+
+void SSD1331::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer) {
+    #ifdef CHECK_RANGE
+    if(x + width > SSD1331_WIDTH)
+        throw std::out_of_range("SSD1331 drawBuffer, x is out of range");
+    if(y + height > SSD1331_HEIGHT)
+        throw std::out_of_range("SSD1331 drawBuffer, y is out of range");
+    #endif
+    //set boundarys of bitmap
+    writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
+    writeCommand(x);
+    writeCommand(x + width - 1);
+
+    writeCommand(SSD1331_CMD_SETROW);           // 0x75
+    writeCommand(y);
+    writeCommand(y + height - 1);
+    //write bitmap
+    for(int i = 0; i < width * height; i++) {
+        pushColor(buffer[i]);
+    }
 }

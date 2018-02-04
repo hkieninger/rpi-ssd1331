@@ -148,14 +148,14 @@ class Display {
         
         /*
          * CAN be overriden with device specifique code to improve the performance
-         * draws a bitmap
+         * draws a bitmap/buffer
          * @x: the x position of the top left corner of the bitmap
          * @y: the y position of the top left corner of the bitmap
          * @width: the width of the bitmap
          * @height: the height of the bitmap
-         * @bitmap: buffer containing the pixel of the bitmap in 565 RGB (16 bit) color
+         * @buffer: buffer containing the pixel of the bitmap in 565 RGB (16 bit) color
          */
-        virtual void drawBitmap(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *bitmap);
+        virtual void drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer);
 
         /*
          * draws a bitmap
