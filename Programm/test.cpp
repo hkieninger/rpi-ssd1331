@@ -2,6 +2,7 @@
 #include <unistd.h> //sleep()
 #include <wiringPi.h> //wiringPiSetupGpio()
 //h
+#include "bitmap.h"
 #include "display.h" //Display::color565()
 #include "ssd1331.h" //SSD1331, .begin(), .end()
 
@@ -16,7 +17,7 @@ int main(void) {
     Bitmap tux("tux.jpg");
     display.drawBitmap(0, 0, tux);
     sleep(3);
-    display.clear();
+    /*display.clear();
     sleep(3);
     display.drawRect(0, 0, 20, 30, D_BLUE);
     sleep(3);
@@ -26,7 +27,7 @@ int main(void) {
     sleep(3);
     display.clear();
     display.drawBitmap(50, 10, raspberry);
-    sleep(3);
+    sleep(3);*/
     display.end();
     return 0;
 }

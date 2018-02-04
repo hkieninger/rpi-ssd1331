@@ -2,17 +2,25 @@
 #define BITMAP_H_ 1
 
 //c++
-#include <string>
+#include <string> //std::string
 //c
-#include <stdint.h>
+#include <stdint.h> //uint16_t
 
 /*
  * class to manage Bitmaps in 565 RGB (16 bit)
  */
 class Bitmap {
-    uint16_t width, height;
-    uint16_t *buffer;
+    protected:
+        uint16_t width, height;
+        uint16_t *buffer;
     public:
+
+        /*
+         * default constructor for the subclasses
+         * initialises an empty buffer
+         */
+        Bitmap(void);
+
         /*
          * constructor for bitmap from buffer
          * @width: the width of the bitmap
@@ -28,7 +36,7 @@ class Bitmap {
          * @throw: std::runtime_error
          * @jpeg: the path to the jpeg file
          */
-        Bitmap(std::string jpeg);
+        Bitmap(std::string jpegFile);
 
         /*
          * destructor, deletes the buffer from the heap
@@ -46,7 +54,7 @@ class Bitmap {
         uint16_t getHeight(void);
 
         /*
-         * @return: the width of the bitmap
+         * @return: the buffer of the bitmap containing the pixels
          */
         uint16_t *getBuffer(void);
 };

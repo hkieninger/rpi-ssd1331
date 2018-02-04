@@ -3,7 +3,7 @@
 
 /*
  * macro to select the type of pin numbering, important for SSD1331::begin() to know the channel associated with the pin
- * WIRINGPI_NUMBERING for wiringPiSetup() -> default for the case none of these are defined
+ * WIRINGPI_NUMBERING for wiringPiSetup() -> default for the case none of these are defined (for wiring look at https://de.pinout.xyz/pinout/wiringpi#)
  * GPIO_NUMBERING for wiringPiSetupGpio()
  * PHYS_NUMBERING for wiringPiSetupPhys()
  */
@@ -145,9 +145,21 @@ class SSD1331: public Display {
 
         /*
          * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException
+         */
+        //void setRotation(uint8_t rotation) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
          * @throw: GPIOException, std::out_of_range
          */
-        void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
+        void drawPixel(uint16_t x, uint16_t y, uint16_t color) override;
+
+        /*
+         * overrides the method of the Display super class, for specifications look up the header file
+         * @throw: GPIOException, std::out_of_range
+         */
+        //void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
 
         /*
          * overrides the method of the Display super class, for specifications look up the header file

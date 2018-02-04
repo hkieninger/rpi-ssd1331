@@ -3,11 +3,13 @@
 #include <stdlib.h> //abs()
 //h
 #include "bitmap.h"
+#include "alpha_bitmap.h"
 #include "display.h"
 
 Display::Display(uint16_t width, uint16_t height) {
     this->width = width;
     this->height = height;
+    rotation = 0;
 }
 
 uint16_t Display::getWidth(void) {
@@ -16,6 +18,35 @@ uint16_t Display::getWidth(void) {
 
 uint16_t Display::getHeight(void) {
     return height;
+}
+
+void Display::setRotation(uint8_t rotation) {
+    rotation %= 4;
+    this->rotation = rotation; 
+}
+
+uint8_t Display::getRotation(void) {
+    return rotation;
+}
+
+void Display::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
+    uint16_t temp;
+    switch(rotation) {
+        case 1:
+            temp = x;
+            x = y;
+            y = temp;
+            break;
+        case 2:
+            x = width - x;
+            y = height - y;
+            break;
+        case 3:
+            temp = width - x;
+            x = height - y;
+            y = temp;
+    }
+    drawPixel(x, y, color);
 }
 
 void Display::clear(void) {
@@ -218,8 +249,21 @@ void Display::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height
     }
 }
 
+void Display::drawAlphaBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer, bool *alpha) {
+    for(int w = 0; w < width; w++) {
+        for(int h = 0; h < height; h++) {
+            if(alpha[h * width + w])
+                drawPoint(x + w, y + h, buffer[h * width + w]);
+        }
+    }
+}
+
 void Display::drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap) {
     drawBuffer(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer());
+}
+
+void Display::drawAlphaBitmap(uint16_t x, uint16_t y, AlphaBitmap& bitmap) {
+    drawAlphaBuffer(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer(), bitmap.getAlpha());
 }
 
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {

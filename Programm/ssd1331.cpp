@@ -129,10 +129,14 @@ void SSD1331::writeCommand(uint8_t command) {
     }
 }
 
-void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
+void SSD1331::drawPixel(uint16_t x, uint16_t y, uint16_t color) {
     goTo(x, y);
     pushColor(color);
 }
+
+/*void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
+    TODO
+}*/
 
 void SSD1331::clear(void) {
     writeCommand(SSD1331_CMD_CLEAR);        //0x25

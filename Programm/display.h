@@ -5,6 +5,7 @@
 #include <stdint.h> //uint16_t, uint8_t
 //h
 #include "bitmap.h"
+#include "alpha_bitmap.h"
 
 //definiton of common colors in 565 RGB (16 bit)
 #define	D_BLACK           0x0000
@@ -22,7 +23,9 @@
  * the drawPoint method must be overriden
  */
 class Display {
-    uint16_t width, height;
+    protected:
+        uint16_t width, height;
+        uint8_t rotation;
     public:
         /* 
          * constructor for a display
@@ -43,13 +46,34 @@ class Display {
         uint16_t getHeight(void);
 
         /*
+         * sets the rotation of the display
+         * @rotation: value between 0 and 3 (inclusive), each number means a rotation by 90 degree
+         */
+        virtual void setRotation(uint8_t rotation);
+
+        /*
+         * gets the rotation of the display
+         * @return: value between 0 and 3 (inclusive), each number means a rotation by 90 degree
+         */
+        uint8_t getRotation(void);
+
+        /*
          * MUST be overriden
-         * set the color for a pixel on the display
+         * set the color for a pixel on the display, doesn't have to care about the rotation
          * @x: the x coordinate of the pixel
          * @y: the y coordinate of the pixel
          * @color: the color to set
          */
-        virtual void drawPoint(uint16_t x, uint16_t y, uint16_t color) = 0;
+        virtual void drawPixel(uint16_t x, uint16_t y, uint16_t color) = 0;
+
+        /*
+         * CAN be overriden with device specifique code to improve the performance
+         * set the color for a pixel on the display, cares about the rotation
+         * @x: the x coordinate of the pixel
+         * @y: the y coordinate of the pixel
+         * @color: the color to set
+         */
+        virtual void drawPoint(uint16_t x, uint16_t y, uint16_t color);
 
         /*
          * CAN be overriden with device specifique code to improve the performance
@@ -158,12 +182,32 @@ class Display {
         virtual void drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer);
 
         /*
+         * CAN be overriden with device specifique code to improve the performance
+         * draws a bitmap/buffer, the alpha buffer defines wether the pixel will be drawn or not
+         * @x: the x position of the top left corner of the bitmap
+         * @y: the y position of the top left corner of the bitmap
+         * @width: the width of the bitmap
+         * @height: the height of the bitmap
+         * @buffer: buffer containing the pixel of the bitmap in 565 RGB (16 bit) color
+         * @alpha: the buffer containing the alpha values
+         */
+        virtual void drawAlphaBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer, bool *alpha);
+
+        /*
          * draws a bitmap
          * @x: the x position of the top left corner of the bitmap
          * @y: the y position of the top left corner of the bitmap
          * @bitmap: the bitmap object
          */
         void drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap);
+
+        /*
+         * draws a alpha bitmap
+         * @x: the x position of the top left corner of the bitmap
+         * @y: the y position of the top left corner of the bitmap
+         * @bitmap: the bitmap object
+         */
+        void drawAlphaBitmap(uint16_t x, uint16_t y, AlphaBitmap& bitmap);
 
         /*
          * calculates the 16 bit version of a 24 bit rgb color
