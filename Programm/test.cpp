@@ -19,6 +19,7 @@ int main(void) {
     for(int i = 0; i < 4; i++) {
         display.clear();
         display.setRotation(i);
+        display.fillRect(0, 0, display.getWidth() - 1, display.getHeight() - 1, D_GREEN);
         display.drawAlphaBitmap(0, 0, gnu);
         sleep(5);
     }
