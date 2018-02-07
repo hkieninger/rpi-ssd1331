@@ -21,3 +21,8 @@ Until now only basic functionalitys are implemented, but there are still a lot o
 - draw bitmap (with alpha value) loaded from png
 - clear screen
 - turn screen on and off <br/> <br/>
+
+### Test Programms
+Until now there are 2 test programms. <br/>
+- test: run `make test`to compile, function dependent of commit
+- clock: run `make clock` to compile, function is a simple clock
