@@ -16,8 +16,8 @@ class Bitmap {
     public:
 
         /*
-         * default constructor for the subclasses
-         * initialises an empty buffer
+         * default constructor
+         * initialises the buffer with NULL
          */
         Bitmap(void);
 

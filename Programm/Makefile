@@ -8,6 +8,12 @@ test: test.o ssd1331.o display.o bitmap.o alpha_bitmap.o
 test.o: test.cpp ssd1331.h display.h bitmap.h alpha_bitmap.h
 	$(CC) -c $(CFLAGS) $<
 
+clock: clock.o ssd1331.o display.o bitmap.o alpha_bitmap.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBRARIES)
+
+clock.o: clock.cpp ssd1331.h display.h
+	$(CC) -c $(CFLAGS) $<
+
 ssd1331.o: ssd1331.cpp ssd1331.h display.h
 	$(CC) -c $(CFLAGS) $<
 

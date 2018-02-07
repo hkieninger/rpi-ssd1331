@@ -147,7 +147,7 @@ class SSD1331: public Display {
          * overrides the method of the Display super class, for specifications look up the header file
          * @throw: GPIOException
          */
-        //void setRotation(uint8_t rotation) override;
+        void setRotation(uint8_t rotation) override;
 
         /*
          * overrides the method of the Display super class, for specifications look up the header file
@@ -159,7 +159,7 @@ class SSD1331: public Display {
          * overrides the method of the Display super class, for specifications look up the header file
          * @throw: GPIOException, std::out_of_range
          */
-        //void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
+        void drawPoint(uint16_t x, uint16_t y, uint16_t color) override;
 
         /*
          * overrides the method of the Display super class, for specifications look up the header file

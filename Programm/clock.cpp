@@ -39,7 +39,7 @@ int main(void) {
         if(lastNow.tm_sec < now->tm_sec) {
             //draw the second hand
             display.drawLine(centerX, centerY, xSecond, ySecond, D_BLACK);
-            float angle = 2 * PI / 60 * now->tm_sec;
+            float angle = 2 * M_PI / 60 * now->tm_sec;
             xSecond = (uint16_t) (centerX + (radius - 1) * sinf(angle));
             ySecond = (uint16_t) (centerY - (radius - 1) * cosf(angle));
             display.drawLine(centerX, centerY, xSecond, ySecond, D_RED);
@@ -47,7 +47,7 @@ int main(void) {
         if(lastNow.tm_min < now->tm_min) {
             //draw the minute hand
             display.drawLine(centerX, centerY, xMinute, yMinute, D_BLACK);
-            float angle = 2 * PI / 60 * now->tm_min;
+            float angle = 2 * M_PI / 60 * now->tm_min;
             xMinute = (uint16_t) (centerX + (2 * radius / 3) * sinf(angle));
             yMinute = (uint16_t) (centerY - (2 * radius / 3) * cosf(angle));
             display.drawLine(centerX, centerY, xMinute, yMinute, D_GREEN);
@@ -55,7 +55,7 @@ int main(void) {
         if(lastNow.tm_hour < now->tm_hour) {
             //draw the hour hand
             display.drawLine(centerX, centerY, xHour, yHour, D_BLACK);
-            float angle = 2 * PI / 24 * now->tm_hour;
+            float angle = 2 * M_PI / 24 * now->tm_hour;
             xHour = (uint16_t) (centerX + (radius / 3) * sinf(angle));
             yHour = (uint16_t) (centerY - (radius / 3) * cosf(angle));
             display.drawLine(centerX, centerY, xHour, yHour, D_BLUE);

@@ -22,7 +22,12 @@ uint16_t Display::getHeight(void) {
 
 void Display::setRotation(uint8_t rotation) {
     rotation %= 4;
-    this->rotation = rotation; 
+    if((this->rotation - rotation) % 2 != 0) {
+        uint16_t temp = width;
+        width = height;
+        height = temp;
+    }
+    this->rotation = rotation;
 }
 
 uint8_t Display::getRotation(void) {
@@ -33,17 +38,17 @@ void Display::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
     uint16_t temp;
     switch(rotation) {
         case 1:
-            temp = x;
+            temp = width - x - 1;
             x = y;
             y = temp;
             break;
         case 2:
-            x = width - x;
-            y = height - y;
+            x = width - x - 1;
+            y = height - y - 1;
             break;
         case 3:
-            temp = width - x;
-            x = height - y;
+            temp = x;
+            x = height - y - 1;
             y = temp;
     }
     drawPixel(x, y, color);

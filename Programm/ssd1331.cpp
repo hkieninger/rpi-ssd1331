@@ -129,14 +129,30 @@ void SSD1331::writeCommand(uint8_t command) {
     }
 }
 
+void SSD1331::setRotation(uint8_t rotation) {
+    Display::setRotation(rotation);
+    writeCommand(SSD1331_CMD_SETREMAP);     //0xA0
+    switch(this->rotation) {
+        case 1: writeCommand(0x70); break;
+        case 2: writeCommand(0x72); break;
+        case 3: writeCommand(0x62); break;
+        default: writeCommand(0x60);
+    }
+}
+
 void SSD1331::drawPixel(uint16_t x, uint16_t y, uint16_t color) {
     goTo(x, y);
     pushColor(color);
 }
 
-/*void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
-    TODO
-}*/
+void SSD1331::drawPoint(uint16_t x, uint16_t y, uint16_t color) {
+    if(rotation % 2 == 1) {
+        uint16_t temp = x;
+        x = y;
+        y = temp;
+    }
+    drawPixel(x, y, color);
+}
 
 void SSD1331::clear(void) {
     writeCommand(SSD1331_CMD_CLEAR);        //0x25
@@ -158,6 +174,14 @@ void SSD1331::drawVerticalLine(uint16_t x, uint16_t y, uint16_t len, uint16_t co
 }
 
 void SSD1331::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    if(rotation % 2 == 1) {
+        uint16_t temp = x0;
+        x0 = y0;
+        y0 = temp;
+        temp = x1;
+        x1 = y1;
+        y1 = temp;
+    }
     #ifdef CHECK_RANGE
     if(x0 >= SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 drawLine, x0 is out of range");
@@ -182,6 +206,14 @@ void SSD1331::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
 }
 
 void SSD1331::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    if(rotation % 2 == 1) {
+        uint16_t temp = x0;
+        x0 = y0;
+        y0 = temp;
+        temp = x1;
+        x1 = y1;
+        y1 = temp;
+    }
     #ifdef CHECK_RANGE
     if(x0 >= SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 drawRect, x0 is out of range");
@@ -213,6 +245,14 @@ void SSD1331::drawRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
 }
 
 void SSD1331::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+    if(rotation % 2 == 1) {
+        uint16_t temp = x0;
+        x0 = y0;
+        y0 = temp;
+        temp = x1;
+        x1 = y1;
+        y1 = temp;
+    }
     #ifdef CHECK_RANGE
     if(x0 >= SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 fillRect, x0 is out of range");
@@ -244,6 +284,11 @@ void SSD1331::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
 }
 
 void SSD1331::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t *buffer) {
+    if(rotation % 2 == 1) {
+        uint16_t temp = x;
+        x = y;
+        y = temp;
+    }
     #ifdef CHECK_RANGE
     if(x + width > SSD1331_WIDTH)
         throw std::out_of_range("SSD1331 drawBuffer, x is out of range");
@@ -253,11 +298,11 @@ void SSD1331::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height
     //set boundarys of bitmap
     writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
     writeCommand(x);
-    writeCommand(x + width - 1);
+    writeCommand(x + SSD1331_WIDTH - 1);
 
     writeCommand(SSD1331_CMD_SETROW);           // 0x75
     writeCommand(y);
-    writeCommand(y + height - 1);
+    writeCommand(y + SSD1331_HEIGHT - 1);
     //write bitmap
     for(int i = 0; i < width * height; i++) {
         pushColor(buffer[i]);
