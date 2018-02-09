@@ -1,9 +1,12 @@
+//c++
+#include <string>
 //c
-#include <stdint.h> //uint16_t, uint8_t, int8_t, int32_t, int64_t
+#include <stdint.h> //uint16_t, uint8_t, int8_t, int32_t, int64_t, uint64_t
 #include <stdlib.h> //abs()
 //h
 #include "bitmap.h"
 #include "alpha_bitmap.h"
+#include "character.h"
 #include "display.h"
 
 Display::Display(uint16_t width, uint16_t height) {
@@ -269,6 +272,56 @@ void Display::drawBitmap(uint16_t x, uint16_t y, Bitmap& bitmap) {
 
 void Display::drawAlphaBitmap(uint16_t x, uint16_t y, AlphaBitmap& bitmap) {
     drawAlphaBuffer(x, y, bitmap.getWidth(), bitmap.getHeight(), bitmap.getBuffer(), bitmap.getAlpha());
+}
+
+void Display::drawChar(uint16_t x, uint16_t y, uint16_t color, char c) {
+    uint64_t character = UNKNOWN_CHARACTER;
+    if(c >= 'A' && c <= 'Z') {
+        character = LETTER_CHARACTER[c - 'A'];
+    } else if(c >= 'a' && c <= 'z') {
+        character = LETTER_CHARACTER[c - 'a'];
+    } else if(c >= '0' && c <= '9') {
+        character = DIGIT_CHARACTER[c - '0'];
+    } else if(c == ' ') {
+        character = PUNCTUATION_CHARACTER[0];
+    } else if(c == '!') {
+        character = PUNCTUATION_CHARACTER[1];
+    } else if (c == '?') {
+        character = PUNCTUATION_CHARACTER[2];
+    } else if(c >= '<' && c <= '>') {
+        character = OPERATOR_CHARACTER[c - '<'];
+    } else if(c == '+') {
+        character = OPERATOR_CHARACTER[3];
+    } else if(c == '-') {
+        character = OPERATOR_CHARACTER[4];
+    } else if(c == '*') {
+        character = OPERATOR_CHARACTER[5];
+    } else if(c == '/') {
+        character = OPERATOR_CHARACTER[6];
+    }
+
+    uint64_t mask  = 1;
+    for(uint16_t h = 0; h < CHARACTER_HEIGHT; h++) {
+        for(uint16_t w = 0; w < CHARACTER_WIDTH; w++) {
+            if(mask & character) {
+                drawPoint(x + CHARACTER_WIDTH - 1 - w, y + CHARACTER_HEIGHT - 1 - h, color);
+            }
+            mask <<= 1;
+        }
+    }
+}
+
+void Display::drawString(uint16_t x, uint16_t y, uint16_t color, std::string str) {
+    uint16_t startX = x;
+    for(uint32_t i = 0; i < str.length(); i++) {
+        if(str[i] == '\n') {
+            y += CHARACTER_HEIGHT + 1 + CHARACTER_HEIGHT / 5;
+            x = startX;
+        } else {
+            drawChar(x, y, color, str[i]);
+            x += CHARACTER_WIDTH + 1 + CHARACTER_WIDTH / 10;
+        }
+    }
 }
 
 uint16_t Display::color565(uint8_t red, uint8_t green, uint8_t blue) {

@@ -17,7 +17,7 @@ clock.o: clock.cpp ssd1331.h display.h
 ssd1331.o: ssd1331.cpp ssd1331.h display.h
 	$(CC) -c $(CFLAGS) $<
 
-display.o: display.cpp display.h bitmap.h alpha_bitmap.h
+display.o: display.cpp display.h bitmap.h alpha_bitmap.h character.h
 	$(CC) -c $(CFLAGS) $<
 
 bitmap.o: bitmap.cpp bitmap.h

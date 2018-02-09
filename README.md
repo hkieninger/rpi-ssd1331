@@ -24,5 +24,5 @@ Until now only basic functionalitys are implemented, but there are still a lot o
 
 ### Test Programms
 Until now there are 2 test programms. <br/>
-- test: run `make test`to compile, function dependent of commit
+- test: run `make test` to compile, function dependent of commit
 - clock: run `make clock` to compile, function is a simple clock

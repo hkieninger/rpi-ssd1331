@@ -15,14 +15,8 @@ int main(void) {
     wiringPiSetup();
     SSD1331 display(CS, DC, RST);
     display.begin();
-    AlphaBitmap gnu("gnu.png");
-    for(int i = 0; i < 4; i++) {
-        display.clear();
-        display.setRotation(i);
-        display.fillRect(0, 0, display.getWidth() - 1, display.getHeight() - 1, D_GREEN);
-        display.drawAlphaBitmap(0, 0, gnu);
-        sleep(5);
-    }
+    display.drawString(0, 0, D_WHITE, "Hello\nWorld\n!!!");
+    sleep(20);
     display.end();
     return 0;
 }

@@ -1,6 +1,8 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_ 1
 
+//c++
+#include <string> //std::string
 //c
 #include <stdint.h> //uint16_t, uint8_t
 //h
@@ -208,6 +210,23 @@ class Display {
          * @bitmap: the bitmap object
          */
         void drawAlphaBitmap(uint16_t x, uint16_t y, AlphaBitmap& bitmap);
+
+        /* draws a character, TODO: add function for size and color
+         * @x: x coordinate of the top left corner
+         * @y: y coordinate of the top left corner
+         * @color: the color
+         * @c: the character to draw
+         */
+        void drawChar(uint16_t x, uint16_t y, uint16_t color, char c);
+
+        /*
+         * draws a string
+         * @x: x coordinate of the top left corner of the first character
+         * @y: y coordinate of the top left corner of the first character
+         * @color: the color
+         * @str: the string to draw
+         */
+        void drawString(uint16_t x, uint16_t y, uint16_t color, std::string str);
 
         /*
          * calculates the 16 bit version of a 24 bit rgb color
