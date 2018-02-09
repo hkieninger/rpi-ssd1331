@@ -19,8 +19,14 @@ Until now only basic functionalitys are implemented, but there are still a lot o
 - fill ellipse
 - draw bitmap loaded from jpeg
 - draw bitmap (with alpha value) loaded from png
+- draw char
+- draw string
 - clear screen
 - turn screen on and off <br/> <br/>
+
+#### Drawing chars and strings
+you can create your own fonts for the chars and strings <br/>
+therefor you can use the LibreOffice Calc file [Font_Creator.ods](Material/Font_Creator.ods) design your font and copy the automatically generated hex code at the correct place in the [character.h](Programm/character.h) header file <br/>
 
 ### Test Programms
 Until now there are 2 test programms. <br/>
