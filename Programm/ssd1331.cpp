@@ -298,11 +298,11 @@ void SSD1331::drawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height
     //set boundarys of bitmap
     writeCommand(SSD1331_CMD_SETCOLUMN);        // 0x15
     writeCommand(x);
-    writeCommand(x + SSD1331_WIDTH - 1);
+    writeCommand(x + width - 1);
 
     writeCommand(SSD1331_CMD_SETROW);           // 0x75
     writeCommand(y);
-    writeCommand(y + SSD1331_HEIGHT - 1);
+    writeCommand(y + height - 1);
     //write bitmap
     for(int i = 0; i < width * height; i++) {
         pushColor(buffer[i]);

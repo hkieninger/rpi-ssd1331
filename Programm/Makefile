@@ -1,18 +1,10 @@
 CC = g++
 CFLAGS = -std=c++11 -O2
-LIBRARIES = -lwiringPi -ljpeg -lpng -lm
+LIBRARIES = -lwiringPi -ljpeg -lpng
 
-test: test.o ssd1331.o display.o bitmap.o alpha_bitmap.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBRARIES)
+#TODO: add make install, uninstall target
 
-test.o: test.cpp ssd1331.h display.h bitmap.h alpha_bitmap.h
-	$(CC) -c $(CFLAGS) $<
-
-clock: clock.o ssd1331.o display.o bitmap.o alpha_bitmap.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBRARIES)
-
-clock.o: clock.cpp ssd1331.h display.h
-	$(CC) -c $(CFLAGS) $<
+all: ssd1331.o display.o bitmap.o alpha_bitmap.o
 
 ssd1331.o: ssd1331.cpp ssd1331.h display.h
 	$(CC) -c $(CFLAGS) $<
@@ -27,4 +19,4 @@ alpha_bitmap.o: alpha_bitmap.cpp alpha_bitmap.h bitmap.h
 	$(CC) -c $(CFLAGS) $<
 
 clean:
-	rm -f *.o test
+	rm -f *.o

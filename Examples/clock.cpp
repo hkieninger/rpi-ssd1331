@@ -4,9 +4,14 @@
 #include <unistd.h> //sleep
 #include <math.h> //PI, sinf(), cosf()
 //h
-#include "display.h" //D_WHITE, D_BLACK, D_RED, D_GREEN, D_BLUE
-#include "ssd1331.h" //SSD1331
+#include "../Programm/display.h" //D_WHITE, D_BLACK, D_RED, D_GREEN, D_BLUE
+#include "../Programm/ssd1331.h" //SSD1331
 
+/*
+ * this example uses the wiringPi pin numbering (for a graphic look at: https://pinout.xyz/pinout/wiringpi#)
+ * you don't need to specify the other pins for spi since the programm uses
+ * the unique hardware spi interface of the raspberry pi
+ */
 #define CS 10
 #define DC 24
 #define RST 25
