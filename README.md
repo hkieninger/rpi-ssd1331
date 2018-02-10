@@ -28,7 +28,10 @@ Until now only basic functionalitys are implemented, but there are still a lot o
 you can create your own fonts for the chars and strings <br/>
 therefor you can use the LibreOffice Calc file [Font_Creator.ods](Material/Font_Creator.ods) design your font and copy the automatically generated hex code at the correct place in the [character.h](Programm/character.h) header file <br/>
 
-### Test Programms
-Until now there are 2 test programms. <br/>
-- test: run `make test` to compile, function dependent of commit
-- clock: run `make clock` to compile, function is a simple clock
+### Examples
+While the library classes are in the [Programm Folder](Programm/), you will find some example programms in the [Examples folder](Examples/). To compile the examples switch to the Examples folder (with `cd Examples`) and run `make`. <br/>
+There are four example programms:
+- [hello_world](Examples/hello_world.cpp): prints a hello world string on the display
+- [picture](Examples/picture.cpp): draws a green background, loads a png and draws it on the background
+- [rotation](Examples/rotation.cpp): rotates the screen four times by 90 degree and draws each time a picture loaded from a jpeg
+- [clock](Examples/clock.cpp): runs a clock on the screen
