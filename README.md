@@ -35,3 +35,6 @@ There are four example programms:
 - [picture](Examples/picture.cpp): draws a green background, loads a png and draws it on the background
 - [rotation](Examples/rotation.cpp): rotates the screen four times by 90 degree and draws each time a picture loaded from a jpeg
 - [clock](Examples/clock.cpp): runs a clock on the screen
+
+### Documentation
+For documentation you can look into the header files. Each function has a description for what it does and which parameter it takes.

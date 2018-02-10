@@ -10,9 +10,9 @@
  * you don't need to specify the other pins for spi since the programm uses
  * the unique hardware spi interface of the raspberry pi
  */
-#define CS 10 //chip select pin
-#define DC 24 //data/command pin
-#define RST 25 //reset pin
+#define CS 10 //chip select pin (required one per display)
+#define DC 24 //data/command pin (can be shared between displays)
+#define RST 25 //reset pin (required one per display)
 
 int main(void) {
     //setup wiringPi the underlying library to access the hardware

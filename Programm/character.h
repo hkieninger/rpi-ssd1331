@@ -51,8 +51,8 @@ extern const uint64_t LETTER_CHARACTER[] = {
     0x46318A944, // V
     0x4631AEE31, // W
     0x462A22A31, // X
-	0x463151084, // Y
-	0x7C222221F  // Z
+    0x463151084, // Y
+    0x7C222221F  // Z
 };
 
 extern const uint64_t DIGIT_CHARACTER[] = {
